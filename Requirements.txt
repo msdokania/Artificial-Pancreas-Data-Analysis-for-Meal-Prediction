@@ -1,0 +1,38 @@
+﻿README
+
+
+Requirements :
+* Python 3.6 to 3.8
+* scikit-learn==0.21.2
+* pandas==0.25.1
+* Python pickle
+Steps to Execute Code:
+1. Download the main.py file as well as the CGMData.csv and InsulinData.csv
+2. Run main.py by the command ‘Python main.py’
+3. The Results.csv will be saved in the same folder as the rest of the above files.
+
+
+Code Explanation:
+1. The csv files are read and the CGM and Insulin data are loaded as db_cgm and db_insulin respectively.
+2. The ‘date_time_stamp’ column is saved in order to use it for the purpose of sorting the data
+3. The data is cleaned by removing the rows from CGM data which contain NaN values. Hence we are left with only non-empty values of 'Sensor Glucose (mg/dL)' in CGM data.
+4. Since the Glucose monitor and Insulin pump operate asynchronously, we have to calculate timestamp from Insulin data when auto mode is started and use this time in CGM data.
+5. The insulin data is sorted in reverse order, so first sort the data in ascending order by date_time_stamp and then find the stamp where auto mode is started for the first time, that is 'AUTO MODE ACTIVE PLGM OFF'
+6. Once the start of auto mode is determined, this is used to Split the CGM data into two parts-
+   1. Auto mode data 
+   2. Manual mode data
+7. There should be a total of 288 samples for each day in the CGM data. However, there might be some CGM data loss, and so we group by Date and select the dates where more than 80% of data (0.8*288) is present.
+8. Finally the following metrics are calculated-
+   1. Percentage time in hyperglycemia (CGM > 180 mg/dL)
+   2. Percentage of time in hyperglycemia critical (CGM > 250 mg/dL)
+   3. Percentage time in range (CGM >= 70 mg/dL and CGM <= 180 mg/dL)
+   4. Percentage time in range secondary (CGM >= 70 mg/dL and CGM <= 150 mg/dL)
+   5. Percentage time in hypoglycemia level 1 (CGM < 70 mg/dL)
+   6. Percentage time in hypoglycemia level 2 (CGM < 54 mg/dL)
+9. These calculations are done first for Overnight ('0:00:00' to '05:59:59'), then daytime ('6:00:00' to '23:59:59') and then whole day ('0:00:00' to '23:59:59'). All the metrics are calculated for both Manual and Auto modes.
+10. The metrics are saved in the order given above, with Manual mode in row1, and auto mode in row 2, in Results.csv 
+
+
+
+
+NOTE: Do not use Python 3.9. Keep all the files in the same folder.
